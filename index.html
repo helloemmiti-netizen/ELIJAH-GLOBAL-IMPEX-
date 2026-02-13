@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>Elijah Global Impex Pvt. Ltd. | Premium Indian Exports — Agricultural, Spices & Marine Products</title>
 <meta name="description" content="Elijah Global Impex Private Limited is an APEDA-registered export house based in Andhra Pradesh, India. We supply premium Basmati rice, Indian spices, and frozen seafood to buyers worldwide.">
 <meta name="keywords" content="Indian exports, Basmati rice export, Indian spices, marine products, seafood export, Andhra Pradesh, Palakol, international trade">
@@ -34,6 +34,8 @@
 html { scroll-behavior: smooth; }
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
 }
 .bg-royal-blue { background-color: var(--royal-blue); }
 .text-royal-blue { color: var(--royal-blue); }
@@ -55,6 +57,13 @@ body {
   box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
   transform: translateY(-6px);
 }
+/* Disable hover transform on touch devices to prevent sticky states */
+@media (hover: none) {
+  .gold-glow:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
 .nav-link::after {
   content: '';
   display: block;
@@ -64,38 +73,91 @@ body {
   transition: width .3s;
 }
 .nav-link:hover::after { width: 100%; }
-#mobile-menu { transition: transform 0.3s ease-in-out; }
+
+/* Mobile menu animation */
+#mobile-menu {
+  transition: max-height 0.3s ease-in-out, opacity 0.3s ease;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+#mobile-menu.open {
+  max-height: 300px;
+  opacity: 1;
+}
+
 .logo-monogram {
-  width: 48px;
-  height: 48px;
+  width: 42px;
+  height: 42px;
   background: var(--royal-blue);
-  border: 3px solid var(--gold);
+  border: 2px solid var(--gold);
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 900;
   color: var(--gold);
   letter-spacing: -1px;
   flex-shrink: 0;
 }
+@media (min-width: 768px) {
+  .logo-monogram {
+    width: 48px;
+    height: 48px;
+    font-size: 22px;
+    border-width: 3px;
+  }
+}
 .stat-number {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 800;
   color: var(--gold);
+}
+@media (min-width: 768px) {
+  .stat-number {
+    font-size: 2.5rem;
+  }
 }
 .certification-badge {
   background: white;
   border: 2px solid #e5e7eb;
   border-radius: 12px;
-  padding: 1rem 1.5rem;
+  padding: 0.75rem 1rem;
   text-align: center;
   transition: all 0.3s;
+}
+@media (min-width: 768px) {
+  .certification-badge {
+    padding: 1rem 1.5rem;
+  }
 }
 .certification-badge:hover {
   border-color: var(--gold);
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Ensure all interactive elements have min 44px touch targets */
+@media (max-width: 767px) {
+  a, button, select, input, textarea {
+    min-height: 44px;
+  }
+  #mobile-menu a {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  #mobile-menu a:last-child {
+    border-bottom: none;
+  }
+}
+
+/* Safe area for WhatsApp button — add bottom padding on mobile */
+@media (max-width: 767px) {
+  footer {
+    padding-bottom: 5rem;
+  }
 }
 </style>
 </head>
@@ -104,13 +166,13 @@ body {
 <!-- Navigation -->
 <nav class="bg-white shadow-lg sticky top-0 z-50 border-b-4 border-gold">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between h-20">
-      <div class="flex items-center space-x-3">
+    <div class="flex justify-between h-16 md:h-20">
+      <div class="flex items-center space-x-2 md:space-x-3 min-w-0">
         <!-- Logo Monogram -->
         <div class="logo-monogram">EG</div>
-        <div class="flex flex-col">
-          <span class="text-xl md:text-2xl font-bold text-royal-blue leading-none">ELIJAH GLOBAL IMPEX</span>
-          <span class="text-xs font-bold text-crimson-red tracking-widest mt-1 uppercase">Private Limited</span>
+        <div class="flex flex-col min-w-0">
+          <span class="text-base sm:text-xl md:text-2xl font-bold text-royal-blue leading-none truncate">ELIJAH GLOBAL IMPEX</span>
+          <span class="text-[10px] sm:text-xs font-bold text-crimson-red tracking-widest mt-0.5 sm:mt-1 uppercase">Private Limited</span>
         </div>
       </div>
       <!-- Desktop Menu -->
@@ -122,72 +184,73 @@ body {
       </div>
       <!-- Mobile menu button -->
       <div class="md:hidden flex items-center">
-        <button onclick="toggleMenu()" class="text-royal-blue focus:outline-none" aria-label="Toggle menu">
-          <i class="fas fa-bars text-2xl"></i>
+        <button id="menu-toggle" onclick="toggleMenu()" class="text-royal-blue focus:outline-none p-2 -mr-2" aria-label="Toggle menu" aria-expanded="false">
+          <i class="fas fa-bars text-2xl" id="menu-icon"></i>
         </button>
       </div>
     </div>
   </div>
   <!-- Mobile Menu -->
-  <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 absolute w-full shadow-xl">
-    <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-      <a href="#home" class="block px-3 py-2 text-gray-700 font-semibold">Home</a>
-      <a href="#about" class="block px-3 py-2 text-gray-700 font-semibold">About Us</a>
-      <a href="#products" class="block px-3 py-2 text-gray-700 font-semibold">Products</a>
-      <a href="#contact" class="block px-3 py-2 text-crimson-red font-bold">Contact Us</a>
+  <div id="mobile-menu" class="md:hidden bg-white border-t border-gray-100 absolute w-full shadow-xl z-50">
+    <div class="px-4 py-2">
+      <a href="#home" class="block px-3 py-3 text-gray-700 font-semibold text-lg">Home</a>
+      <a href="#about" class="block px-3 py-3 text-gray-700 font-semibold text-lg">About Us</a>
+      <a href="#products" class="block px-3 py-3 text-gray-700 font-semibold text-lg">Products</a>
+      <a href="#contact" class="block px-3 py-3 text-crimson-red font-bold text-lg">Contact Us</a>
     </div>
   </div>
 </nav>
 
 <!-- Hero Section -->
-<section id="home" class="hero-gradient min-h-screen flex items-center text-white px-4">
+<section id="home" class="hero-gradient min-h-[85vh] md:min-h-screen flex items-center text-white px-4 py-16">
   <div class="max-w-5xl mx-auto text-center">
-    <p class="text-gold font-bold tracking-widest mb-4 uppercase text-sm md:text-base" data-aos="fade-down">APEDA-Registered Export House &bull; Andhra Pradesh, India</p>
-    <h1 class="text-4xl md:text-7xl font-extrabold mb-6" data-aos="fade-up" data-aos-delay="100">Connecting Indian Excellence<br>to the World</h1>
-    <p class="text-lg md:text-xl mb-10 text-gray-200 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="200">We source, process, and ship premium agricultural commodities, spices, and marine products from the fertile lands of Andhra Pradesh to buyers across the globe.</p>
-    <div class="flex flex-col sm:flex-row justify-center gap-4" data-aos="fade-up" data-aos-delay="300">
-      <a href="#products" class="bg-gold text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-yellow-600 transition shadow-lg">Explore Our Products</a>
-      <a href="#contact" class="border-2 border-white text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white hover:text-royal-blue transition shadow-lg">Request a Quote</a>
+    <p class="text-gold font-bold tracking-widest mb-3 md:mb-4 uppercase text-xs sm:text-sm md:text-base" data-aos="fade-down">APEDA-Registered Export House &bull; Andhra Pradesh, India</p>
+    <h1 class="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-extrabold mb-4 md:mb-6 leading-tight" data-aos="fade-up" data-aos-delay="100">Connecting Indian Excellence<br>to the World</h1>
+    <p class="text-base sm:text-lg md:text-xl mb-8 md:mb-10 text-gray-200 max-w-2xl mx-auto px-2" data-aos="fade-up" data-aos-delay="200">We source, process, and ship premium agricultural commodities, spices, and marine products from the fertile lands of Andhra Pradesh to buyers across the globe.</p>
+    <div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-4 sm:px-0" data-aos="fade-up" data-aos-delay="300">
+      <a href="#products" class="bg-gold text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg hover:bg-yellow-600 transition shadow-lg text-center">Explore Our Products</a>
+      <a href="#contact" class="border-2 border-white text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg hover:bg-white hover:text-royal-blue transition shadow-lg text-center">Request a Quote</a>
     </div>
   </div>
 </section>
 
 <!-- About Section -->
-<section id="about" class="py-20 px-4 bg-white">
+<section id="about" class="py-12 md:py-20 px-4 bg-white">
   <div class="max-w-7xl mx-auto">
-    <div class="grid md:grid-cols-2 gap-12 items-center">
+    <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
       <div class="relative" data-aos="fade-right">
-        <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800" alt="Warehouse and logistics operations" class="rounded-lg shadow-2xl border-l-8 border-gold">
-        <div class="absolute -bottom-6 -right-6 bg-royal-blue p-6 rounded-lg text-white hidden md:block shadow-xl">
-          <p class="text-3xl font-bold">APEDA</p>
-          <p class="text-sm">Registered Exporter</p>
+        <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800" alt="Warehouse and logistics operations" class="rounded-lg shadow-2xl border-l-4 md:border-l-8 border-gold w-full">
+        <!-- Badge visible on all screens, repositioned on mobile -->
+        <div class="absolute -bottom-4 right-2 md:-bottom-6 md:-right-6 bg-royal-blue p-3 md:p-6 rounded-lg text-white shadow-xl">
+          <p class="text-xl md:text-3xl font-bold">APEDA</p>
+          <p class="text-xs md:text-sm">Registered Exporter</p>
         </div>
       </div>
-      <div data-aos="fade-left">
-        <h3 class="text-crimson-red font-bold uppercase tracking-widest mb-2">About Our Company</h3>
-        <h2 class="text-3xl md:text-4xl font-bold text-royal-blue mb-6">Built on Trust, Delivered with Integrity</h2>
-        <p class="text-gray-600 mb-4 leading-relaxed">
+      <div class="mt-8 md:mt-0" data-aos="fade-left">
+        <h3 class="text-crimson-red font-bold uppercase tracking-widest mb-2 text-sm">About Our Company</h3>
+        <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-royal-blue mb-4 md:mb-6">Built on Trust, Delivered with Integrity</h2>
+        <p class="text-gray-600 mb-4 leading-relaxed text-sm sm:text-base">
           Headquartered in Palakol, West Godavari District, <strong>Elijah Global Impex Private Limited</strong> is a dedicated export-import house that connects Indian producers with international buyers. We work directly with farmers, processors, and aquaculture facilities across Andhra Pradesh to deliver products that meet the strictest global quality standards.
         </p>
-        <p class="text-gray-600 mb-6 leading-relaxed">
+        <p class="text-gray-600 mb-6 leading-relaxed text-sm sm:text-base">
           Under the leadership of Director <strong>Elijah Vivek Sanamanda</strong>, every shipment undergoes rigorous quality inspection, proper documentation, and end-to-end logistics management &mdash; so our partners receive exactly what they ordered, on time, every time.
         </p>
-        <div class="grid grid-cols-2 gap-6 mb-8">
-          <div class="flex items-center space-x-3">
-            <i class="fas fa-seedling text-gold text-xl"></i>
-            <span class="font-semibold text-gray-800">Farm-Direct Sourcing</span>
+        <div class="grid grid-cols-2 gap-4 md:gap-6 mb-8">
+          <div class="flex items-center space-x-2 md:space-x-3">
+            <i class="fas fa-seedling text-gold text-lg md:text-xl"></i>
+            <span class="font-semibold text-gray-800 text-sm md:text-base">Farm-Direct Sourcing</span>
           </div>
-          <div class="flex items-center space-x-3">
-            <i class="fas fa-ship text-gold text-xl"></i>
-            <span class="font-semibold text-gray-800">Global Shipping</span>
+          <div class="flex items-center space-x-2 md:space-x-3">
+            <i class="fas fa-ship text-gold text-lg md:text-xl"></i>
+            <span class="font-semibold text-gray-800 text-sm md:text-base">Global Shipping</span>
           </div>
-          <div class="flex items-center space-x-3">
-            <i class="fas fa-microscope text-gold text-xl"></i>
-            <span class="font-semibold text-gray-800">Lab-Tested Quality</span>
+          <div class="flex items-center space-x-2 md:space-x-3">
+            <i class="fas fa-microscope text-gold text-lg md:text-xl"></i>
+            <span class="font-semibold text-gray-800 text-sm md:text-base">Lab-Tested Quality</span>
           </div>
-          <div class="flex items-center space-x-3">
-            <i class="fas fa-handshake text-gold text-xl"></i>
-            <span class="font-semibold text-gray-800">Long-Term Partnerships</span>
+          <div class="flex items-center space-x-2 md:space-x-3">
+            <i class="fas fa-handshake text-gold text-lg md:text-xl"></i>
+            <span class="font-semibold text-gray-800 text-sm md:text-base">Long-Term Partners</span>
           </div>
         </div>
       </div>
@@ -196,162 +259,162 @@ body {
 </section>
 
 <!-- Why Choose Us / Stats Section -->
-<section class="bg-deep-blue py-16 px-4">
+<section class="bg-deep-blue py-12 md:py-16 px-4">
   <div class="max-w-7xl mx-auto">
-    <h2 class="text-3xl font-bold text-white text-center mb-4" data-aos="fade-up">Why Buyers Choose Us</h2>
-    <div class="w-24 h-1 bg-gold mx-auto mb-12"></div>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+    <h2 class="text-2xl md:text-3xl font-bold text-white text-center mb-3 md:mb-4" data-aos="fade-up">Why Buyers Choose Us</h2>
+    <div class="w-24 h-1 bg-gold mx-auto mb-8 md:mb-12"></div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 text-center">
       <div data-aos="fade-up" data-aos-delay="0">
-        <div class="stat-number" id="stat-countries">15+</div>
-        <p class="text-gray-300 mt-2 font-semibold">Countries Served</p>
+        <div class="stat-number">15+</div>
+        <p class="text-gray-300 mt-1 md:mt-2 font-semibold text-xs sm:text-sm md:text-base">Countries Served</p>
       </div>
       <div data-aos="fade-up" data-aos-delay="100">
-        <div class="stat-number" id="stat-products">50+</div>
-        <p class="text-gray-300 mt-2 font-semibold">Product Varieties</p>
+        <div class="stat-number">50+</div>
+        <p class="text-gray-300 mt-1 md:mt-2 font-semibold text-xs sm:text-sm md:text-base">Product Varieties</p>
       </div>
       <div data-aos="fade-up" data-aos-delay="200">
-        <div class="stat-number" id="stat-partners">100+</div>
-        <p class="text-gray-300 mt-2 font-semibold">Farmer Partners</p>
+        <div class="stat-number">100+</div>
+        <p class="text-gray-300 mt-1 md:mt-2 font-semibold text-xs sm:text-sm md:text-base">Farmer Partners</p>
       </div>
       <div data-aos="fade-up" data-aos-delay="300">
-        <div class="stat-number" id="stat-quality">100%</div>
-        <p class="text-gray-300 mt-2 font-semibold">Quality Inspected</p>
+        <div class="stat-number">100%</div>
+        <p class="text-gray-300 mt-1 md:mt-2 font-semibold text-xs sm:text-sm md:text-base">Quality Inspected</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Products Section -->
-<section id="products" class="py-20 px-4 bg-gray-100">
-  <div class="max-w-7xl mx-auto text-center mb-16">
-    <h2 class="text-3xl md:text-4xl font-bold text-royal-blue mb-4" data-aos="fade-up">Our Export Specialties</h2>
-    <p class="text-gray-500 max-w-xl mx-auto" data-aos="fade-up" data-aos-delay="100">Each product is sourced from verified suppliers, lab-tested, and packed to international export standards.</p>
+<section id="products" class="py-12 md:py-20 px-4 bg-gray-100">
+  <div class="max-w-7xl mx-auto text-center mb-10 md:mb-16">
+    <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-royal-blue mb-3 md:mb-4" data-aos="fade-up">Our Export Specialties</h2>
+    <p class="text-gray-500 max-w-xl mx-auto text-sm sm:text-base px-2" data-aos="fade-up" data-aos-delay="100">Each product is sourced from verified suppliers, lab-tested, and packed to international export standards.</p>
     <div class="w-24 h-1 bg-gold mx-auto mt-4"></div>
   </div>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 max-w-7xl mx-auto">
     <!-- Product 1 -->
     <div class="bg-white rounded-xl overflow-hidden shadow-lg border-b-4 border-royal-blue gold-glow" data-aos="fade-up" data-aos-delay="0">
-      <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=600" alt="Premium Basmati Rice and Grains" class="h-56 w-full object-cover">
-      <div class="p-6">
-        <h3 class="text-xl font-bold mb-2">Agricultural Commodities</h3>
-        <p class="text-gray-600 mb-3">Premium Basmati rice (1121, PUSA), Non-Basmati varieties (Sona Masoori, IR-64), pulses, and organic millets. Available in 5&nbsp;kg to bulk container loads.</p>
-        <ul class="text-sm text-gray-500 mb-4 space-y-1">
+      <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=600" alt="Premium Basmati Rice and Grains" class="h-48 sm:h-56 w-full object-cover">
+      <div class="p-5 sm:p-6">
+        <h3 class="text-lg sm:text-xl font-bold mb-2">Agricultural Commodities</h3>
+        <p class="text-gray-600 mb-3 text-sm sm:text-base">Premium Basmati rice (1121, PUSA), Non-Basmati varieties (Sona Masoori, IR-64), pulses, and organic millets. Available in 5&nbsp;kg to bulk container loads.</p>
+        <ul class="text-xs sm:text-sm text-gray-500 mb-4 space-y-1">
           <li><i class="fas fa-check text-gold mr-2"></i>Sortex-cleaned &amp; polished</li>
           <li><i class="fas fa-check text-gold mr-2"></i>Custom packaging available</li>
           <li><i class="fas fa-check text-gold mr-2"></i>MOQ: 1 container (20 MT)</li>
         </ul>
-        <a href="#contact" class="text-royal-blue font-bold hover:text-gold transition">Inquire Now &rarr;</a>
+        <a href="#contact" class="text-royal-blue font-bold hover:text-gold transition text-sm sm:text-base">Inquire Now &rarr;</a>
       </div>
     </div>
     <!-- Product 2 -->
     <div class="bg-white rounded-xl overflow-hidden shadow-lg border-b-4 border-crimson-red gold-glow" data-aos="fade-up" data-aos-delay="100">
-      <img src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&q=80&w=600" alt="Indian Turmeric, Chilli, and Spices" class="h-56 w-full object-cover">
-      <div class="p-6">
-        <h3 class="text-xl font-bold mb-2">Indian Spices &amp; Herbs</h3>
-        <p class="text-gray-600 mb-3">Turmeric (Erode, Salem), Red Chilli (Teja, Byadgi), Black Pepper, Cumin, Coriander, and Fenugreek. All laboratory-tested for purity and pesticide residues.</p>
-        <ul class="text-sm text-gray-500 mb-4 space-y-1">
+      <img src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&q=80&w=600" alt="Indian Turmeric, Chilli, and Spices" class="h-48 sm:h-56 w-full object-cover">
+      <div class="p-5 sm:p-6">
+        <h3 class="text-lg sm:text-xl font-bold mb-2">Indian Spices &amp; Herbs</h3>
+        <p class="text-gray-600 mb-3 text-sm sm:text-base">Turmeric (Erode, Salem), Red Chilli (Teja, Byadgi), Black Pepper, Cumin, Coriander, and Fenugreek. All laboratory-tested for purity and pesticide residues.</p>
+        <ul class="text-xs sm:text-sm text-gray-500 mb-4 space-y-1">
           <li><i class="fas fa-check text-gold mr-2"></i>Whole, crushed, or powdered</li>
           <li><i class="fas fa-check text-gold mr-2"></i>FSSAI &amp; Spice Board certified</li>
           <li><i class="fas fa-check text-gold mr-2"></i>Private labelling available</li>
         </ul>
-        <a href="#contact" class="text-royal-blue font-bold hover:text-gold transition">Inquire Now &rarr;</a>
+        <a href="#contact" class="text-royal-blue font-bold hover:text-gold transition text-sm sm:text-base">Inquire Now &rarr;</a>
       </div>
     </div>
     <!-- Product 3 -->
-    <div class="bg-white rounded-xl overflow-hidden shadow-lg border-b-4 border-gold gold-glow" data-aos="fade-up" data-aos-delay="200">
-      <img src="https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?auto=format&fit=crop&q=80&w=600" alt="Frozen Seafood and Aqua Products" class="h-56 w-full object-cover">
-      <div class="p-6">
-        <h3 class="text-xl font-bold mb-2">Marine &amp; Aqua Exports</h3>
-        <p class="text-gray-600 mb-3">Frozen shrimp (Vannamei, Black Tiger), fish fillets, and dried seafood sourced from the aquaculture belt of West Godavari and Krishna districts.</p>
-        <ul class="text-sm text-gray-500 mb-4 space-y-1">
+    <div class="bg-white rounded-xl overflow-hidden shadow-lg border-b-4 border-gold gold-glow sm:col-span-2 md:col-span-1" data-aos="fade-up" data-aos-delay="200">
+      <img src="https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?auto=format&fit=crop&q=80&w=600" alt="Frozen Seafood and Aqua Products" class="h-48 sm:h-56 w-full object-cover">
+      <div class="p-5 sm:p-6">
+        <h3 class="text-lg sm:text-xl font-bold mb-2">Marine &amp; Aqua Exports</h3>
+        <p class="text-gray-600 mb-3 text-sm sm:text-base">Frozen shrimp (Vannamei, Black Tiger), fish fillets, and dried seafood sourced from the aquaculture belt of West Godavari and Krishna districts.</p>
+        <ul class="text-xs sm:text-sm text-gray-500 mb-4 space-y-1">
           <li><i class="fas fa-check text-gold mr-2"></i>HACCP &amp; EU-compliant processing</li>
           <li><i class="fas fa-check text-gold mr-2"></i>Cold-chain logistics included</li>
           <li><i class="fas fa-check text-gold mr-2"></i>IQF &amp; block frozen options</li>
         </ul>
-        <a href="#contact" class="text-royal-blue font-bold hover:text-gold transition">Inquire Now &rarr;</a>
+        <a href="#contact" class="text-royal-blue font-bold hover:text-gold transition text-sm sm:text-base">Inquire Now &rarr;</a>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Certifications / Trust Badges -->
-<section class="py-16 px-4 bg-white">
+<section class="py-12 md:py-16 px-4 bg-white">
   <div class="max-w-7xl mx-auto text-center">
-    <h2 class="text-2xl md:text-3xl font-bold text-royal-blue mb-4" data-aos="fade-up">Certifications &amp; Compliance</h2>
-    <p class="text-gray-500 mb-10 max-w-xl mx-auto" data-aos="fade-up" data-aos-delay="100">We maintain the registrations and certifications that global buyers depend on.</p>
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-6" data-aos="fade-up" data-aos-delay="200">
+    <h2 class="text-2xl md:text-3xl font-bold text-royal-blue mb-3 md:mb-4" data-aos="fade-up">Certifications &amp; Compliance</h2>
+    <p class="text-gray-500 mb-8 md:mb-10 max-w-xl mx-auto text-sm sm:text-base px-2" data-aos="fade-up" data-aos-delay="100">We maintain the registrations and certifications that global buyers depend on.</p>
+    <div class="grid grid-cols-3 sm:grid-cols-5 gap-3 sm:gap-4 md:gap-6" data-aos="fade-up" data-aos-delay="200">
       <div class="certification-badge">
-        <i class="fas fa-certificate text-3xl text-royal-blue mb-2"></i>
-        <p class="font-bold text-sm text-gray-700">APEDA<br>Registered</p>
+        <i class="fas fa-certificate text-2xl md:text-3xl text-royal-blue mb-1 md:mb-2"></i>
+        <p class="font-bold text-xs md:text-sm text-gray-700">APEDA<br>Registered</p>
       </div>
       <div class="certification-badge">
-        <i class="fas fa-shield-alt text-3xl text-green-600 mb-2"></i>
-        <p class="font-bold text-sm text-gray-700">FSSAI<br>Licensed</p>
+        <i class="fas fa-shield-alt text-2xl md:text-3xl text-green-600 mb-1 md:mb-2"></i>
+        <p class="font-bold text-xs md:text-sm text-gray-700">FSSAI<br>Licensed</p>
       </div>
       <div class="certification-badge">
-        <i class="fas fa-file-alt text-3xl text-blue-600 mb-2"></i>
-        <p class="font-bold text-sm text-gray-700">IEC<br>Code Holder</p>
+        <i class="fas fa-file-alt text-2xl md:text-3xl text-blue-600 mb-1 md:mb-2"></i>
+        <p class="font-bold text-xs md:text-sm text-gray-700">IEC<br>Code Holder</p>
       </div>
       <div class="certification-badge">
-        <i class="fas fa-building text-3xl text-purple-600 mb-2"></i>
-        <p class="font-bold text-sm text-gray-700">GST<br>Registered</p>
+        <i class="fas fa-building text-2xl md:text-3xl text-purple-600 mb-1 md:mb-2"></i>
+        <p class="font-bold text-xs md:text-sm text-gray-700">GST<br>Registered</p>
       </div>
       <div class="certification-badge">
-        <i class="fas fa-globe text-3xl text-gold mb-2"></i>
-        <p class="font-bold text-sm text-gray-700">ISO 22000<br>Standards</p>
+        <i class="fas fa-globe text-2xl md:text-3xl text-gold mb-1 md:mb-2"></i>
+        <p class="font-bold text-xs md:text-sm text-gray-700">ISO 22000<br>Standards</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Testimonials -->
-<section class="py-20 px-4 bg-gray-100">
+<section class="py-12 md:py-20 px-4 bg-gray-100">
   <div class="max-w-7xl mx-auto">
-    <h2 class="text-3xl font-bold text-royal-blue text-center mb-4" data-aos="fade-up">What Our Partners Say</h2>
-    <div class="w-24 h-1 bg-gold mx-auto mb-12"></div>
-    <div class="grid md:grid-cols-3 gap-8">
-      <div class="bg-white rounded-xl p-8 shadow-md border-t-4 border-gold" data-aos="fade-up" data-aos-delay="0">
-        <div class="flex items-center mb-4">
-          <div class="text-gold text-lg">
+    <h2 class="text-2xl md:text-3xl font-bold text-royal-blue text-center mb-3 md:mb-4" data-aos="fade-up">What Our Partners Say</h2>
+    <div class="w-24 h-1 bg-gold mx-auto mb-8 md:mb-12"></div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+      <div class="bg-white rounded-xl p-6 md:p-8 shadow-md border-t-4 border-gold" data-aos="fade-up" data-aos-delay="0">
+        <div class="flex items-center mb-3 md:mb-4">
+          <div class="text-gold text-base md:text-lg">
             <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
           </div>
         </div>
-        <p class="text-gray-600 italic mb-6">"Elijah Global Impex consistently delivers rice that meets our strict quality standards. Their documentation is always accurate and shipments arrive on schedule. A reliable partner for our Middle East distribution."</p>
+        <p class="text-gray-600 italic mb-4 md:mb-6 text-sm sm:text-base">"Elijah Global Impex consistently delivers rice that meets our strict quality standards. Their documentation is always accurate and shipments arrive on schedule. A reliable partner for our Middle East distribution."</p>
         <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-full bg-royal-blue flex items-center justify-center text-white font-bold">A</div>
+          <div class="w-10 h-10 rounded-full bg-royal-blue flex items-center justify-center text-white font-bold text-sm">A</div>
           <div>
-            <p class="font-bold text-gray-800">Ahmed Al-Rashid</p>
-            <p class="text-sm text-gray-500">Food Distributor, UAE</p>
+            <p class="font-bold text-gray-800 text-sm sm:text-base">Ahmed Al-Rashid</p>
+            <p class="text-xs sm:text-sm text-gray-500">Food Distributor, UAE</p>
           </div>
         </div>
       </div>
-      <div class="bg-white rounded-xl p-8 shadow-md border-t-4 border-crimson-red" data-aos="fade-up" data-aos-delay="100">
-        <div class="flex items-center mb-4">
-          <div class="text-gold text-lg">
+      <div class="bg-white rounded-xl p-6 md:p-8 shadow-md border-t-4 border-crimson-red" data-aos="fade-up" data-aos-delay="100">
+        <div class="flex items-center mb-3 md:mb-4">
+          <div class="text-gold text-base md:text-lg">
             <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
           </div>
         </div>
-        <p class="text-gray-600 italic mb-6">"We switched to Elijah for our spice supply and haven't looked back. The turmeric and chilli quality is exceptional, and their team handles all export paperwork seamlessly. Truly a one-stop solution."</p>
+        <p class="text-gray-600 italic mb-4 md:mb-6 text-sm sm:text-base">"We switched to Elijah for our spice supply and haven't looked back. The turmeric and chilli quality is exceptional, and their team handles all export paperwork seamlessly. Truly a one-stop solution."</p>
         <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-full bg-crimson-red flex items-center justify-center text-white font-bold">S</div>
+          <div class="w-10 h-10 rounded-full bg-crimson-red flex items-center justify-center text-white font-bold text-sm">S</div>
           <div>
-            <p class="font-bold text-gray-800">Sarah Mitchell</p>
-            <p class="text-sm text-gray-500">Spice Importer, United Kingdom</p>
+            <p class="font-bold text-gray-800 text-sm sm:text-base">Sarah Mitchell</p>
+            <p class="text-xs sm:text-sm text-gray-500">Spice Importer, United Kingdom</p>
           </div>
         </div>
       </div>
-      <div class="bg-white rounded-xl p-8 shadow-md border-t-4 border-royal-blue" data-aos="fade-up" data-aos-delay="200">
-        <div class="flex items-center mb-4">
-          <div class="text-gold text-lg">
+      <div class="bg-white rounded-xl p-6 md:p-8 shadow-md border-t-4 border-royal-blue" data-aos="fade-up" data-aos-delay="200">
+        <div class="flex items-center mb-3 md:mb-4">
+          <div class="text-gold text-base md:text-lg">
             <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
           </div>
         </div>
-        <p class="text-gray-600 italic mb-6">"The frozen shrimp quality from Elijah Global is on par with the best in the region. Their cold-chain process is well managed. We are expanding our order volume for the next quarter."</p>
+        <p class="text-gray-600 italic mb-4 md:mb-6 text-sm sm:text-base">"The frozen shrimp quality from Elijah Global is on par with the best in the region. Their cold-chain process is well managed. We are expanding our order volume for the next quarter."</p>
         <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-full bg-gold flex items-center justify-center text-white font-bold">T</div>
+          <div class="w-10 h-10 rounded-full bg-gold flex items-center justify-center text-white font-bold text-sm">T</div>
           <div>
-            <p class="font-bold text-gray-800">Takeshi Yamamoto</p>
-            <p class="text-sm text-gray-500">Seafood Buyer, Japan</p>
+            <p class="font-bold text-gray-800 text-sm sm:text-base">Takeshi Yamamoto</p>
+            <p class="text-xs sm:text-sm text-gray-500">Seafood Buyer, Japan</p>
           </div>
         </div>
       </div>
@@ -360,49 +423,49 @@ body {
 </section>
 
 <!-- Contact Section -->
-<section id="contact" class="py-20 px-4 bg-white">
+<section id="contact" class="py-12 md:py-20 px-4 bg-white">
   <div class="max-w-7xl mx-auto">
-    <div class="grid md:grid-cols-2 gap-16">
+    <div class="grid md:grid-cols-2 gap-10 md:gap-16">
       <div data-aos="fade-right">
-        <h3 class="text-crimson-red font-bold uppercase tracking-widest mb-2">Let's Work Together</h3>
-        <h2 class="text-3xl font-bold text-royal-blue mb-6">Get In Touch</h2>
-        <p class="text-gray-600 mb-8">Whether you need a custom quote, product samples, or sourcing consultation &mdash; our team responds within 24 hours.</p>
-        <div class="space-y-6">
-          <div class="flex items-start space-x-4">
-            <div class="bg-royal-blue p-3 rounded-lg text-gold">
-              <i class="fas fa-map-marker-alt text-xl"></i>
+        <h3 class="text-crimson-red font-bold uppercase tracking-widest mb-2 text-sm">Let's Work Together</h3>
+        <h2 class="text-2xl sm:text-3xl font-bold text-royal-blue mb-4 md:mb-6">Get In Touch</h2>
+        <p class="text-gray-600 mb-6 md:mb-8 text-sm sm:text-base">Whether you need a custom quote, product samples, or sourcing consultation &mdash; our team responds within 24 hours.</p>
+        <div class="space-y-5 md:space-y-6">
+          <div class="flex items-start space-x-3 md:space-x-4">
+            <div class="bg-royal-blue p-2.5 md:p-3 rounded-lg text-gold flex-shrink-0">
+              <i class="fas fa-map-marker-alt text-lg md:text-xl"></i>
             </div>
             <div>
-              <h4 class="font-bold">Registered Office</h4>
-              <p class="text-gray-600">9-169, Rajeev Nagar, Eye Hospitals Lane,<br>Palakol (Mandal), West Godavari &mdash; 534260,<br>Andhra Pradesh, India.</p>
+              <h4 class="font-bold text-sm sm:text-base">Registered Office</h4>
+              <p class="text-gray-600 text-sm sm:text-base">9-169, Rajeev Nagar, Eye Hospitals Lane,<br>Palakol (Mandal), West Godavari &mdash; 534260,<br>Andhra Pradesh, India.</p>
             </div>
           </div>
-          <div class="flex items-center space-x-4">
-            <div class="bg-royal-blue p-3 rounded-lg text-gold">
-              <i class="fas fa-phone-alt text-xl"></i>
+          <div class="flex items-center space-x-3 md:space-x-4">
+            <div class="bg-royal-blue p-2.5 md:p-3 rounded-lg text-gold flex-shrink-0">
+              <i class="fas fa-phone-alt text-lg md:text-xl"></i>
             </div>
             <div>
-              <h4 class="font-bold">Call / WhatsApp</h4>
-              <p class="text-gray-600"><a href="tel:+919121799978" class="hover:text-royal-blue transition">+91 912 179 9978</a></p>
+              <h4 class="font-bold text-sm sm:text-base">Call / WhatsApp</h4>
+              <p class="text-gray-600 text-sm sm:text-base"><a href="tel:+919121799978" class="hover:text-royal-blue active:text-royal-blue transition">+91 912 179 9978</a></p>
             </div>
           </div>
-          <div class="flex items-center space-x-4">
-            <div class="bg-royal-blue p-3 rounded-lg text-gold">
-              <i class="fas fa-envelope text-xl"></i>
+          <div class="flex items-center space-x-3 md:space-x-4">
+            <div class="bg-royal-blue p-2.5 md:p-3 rounded-lg text-gold flex-shrink-0">
+              <i class="fas fa-envelope text-lg md:text-xl"></i>
             </div>
             <div>
-              <h4 class="font-bold">Email Us</h4>
-              <p class="text-gray-600"><a href="mailto:contact@elijahglobalimpex.com" class="hover:text-royal-blue transition">contact@elijahglobalimpex.com</a></p>
+              <h4 class="font-bold text-sm sm:text-base">Email Us</h4>
+              <p class="text-gray-600 text-sm sm:text-base"><a href="mailto:Elijah@elijahglobalimpex.com" class="hover:text-royal-blue active:text-royal-blue transition break-all">Elijah@elijahglobalimpex.com</a></p>
             </div>
           </div>
         </div>
-        <div class="mt-10 p-6 border-l-4 border-gold bg-gray-50 rounded-r-lg">
-          <p class="italic text-gray-700">"Our mission is to bridge the gap between Indian quality and global demand through excellence in service."</p>
-          <p class="mt-4 font-bold text-royal-blue">&mdash; Elijah Vivek Sanamanda, Director</p>
+        <div class="mt-8 md:mt-10 p-5 md:p-6 border-l-4 border-gold bg-gray-50 rounded-r-lg">
+          <p class="italic text-gray-700 text-sm sm:text-base">"Our mission is to bridge the gap between Indian quality and global demand through excellence in service."</p>
+          <p class="mt-3 md:mt-4 font-bold text-royal-blue text-sm sm:text-base">&mdash; Elijah Vivek Sanamanda, Director</p>
         </div>
       </div>
-      <div class="bg-white shadow-2xl rounded-2xl p-8 border border-gray-100" data-aos="fade-left">
-        <h3 class="text-xl font-bold text-royal-blue mb-6">Send Us an Inquiry</h3>
+      <div class="bg-white shadow-2xl rounded-2xl p-6 md:p-8 border border-gray-100" data-aos="fade-left">
+        <h3 class="text-lg sm:text-xl font-bold text-royal-blue mb-5 md:mb-6">Send Us an Inquiry</h3>
         <form action="https://formsubmit.co/Elijah@elijahglobalimpex.com" method="POST">
           <!-- FormSubmit configuration -->
           <input type="hidden" name="_subject" value="New Inquiry from Website">
@@ -410,23 +473,23 @@ body {
           <input type="hidden" name="_template" value="box">
           <input type="text" name="_honey" style="display:none">
 
-          <div class="grid grid-cols-1 gap-6">
+          <div class="grid grid-cols-1 gap-4 md:gap-6">
             <div>
-              <label class="block text-sm font-bold text-gray-700 mb-2">Full Name *</label>
-              <input type="text" name="name" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition" placeholder="Your full name">
+              <label class="block text-sm font-bold text-gray-700 mb-1.5 md:mb-2">Full Name *</label>
+              <input type="text" name="name" required class="w-full px-3 md:px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-base" placeholder="Your full name">
             </div>
             <div>
-              <label class="block text-sm font-bold text-gray-700 mb-2">Email Address *</label>
-              <input type="email" name="email" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition" placeholder="you@company.com">
+              <label class="block text-sm font-bold text-gray-700 mb-1.5 md:mb-2">Email Address *</label>
+              <input type="email" name="email" required class="w-full px-3 md:px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-base" placeholder="you@company.com">
             </div>
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-bold text-gray-700 mb-2">Country</label>
-                <input type="text" name="country" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition" placeholder="e.g. UAE">
+                <label class="block text-sm font-bold text-gray-700 mb-1.5 md:mb-2">Country</label>
+                <input type="text" name="country" class="w-full px-3 md:px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-base" placeholder="e.g. UAE">
               </div>
               <div>
-                <label class="block text-sm font-bold text-gray-700 mb-2">Product Interest</label>
-                <select name="product" class="w-full px-4 py-3 rounded-lg border border-gray-300 outline-none">
+                <label class="block text-sm font-bold text-gray-700 mb-1.5 md:mb-2">Product Interest</label>
+                <select name="product" class="w-full px-3 md:px-4 py-3 rounded-lg border border-gray-300 outline-none text-base bg-white">
                   <option>Agricultural Products</option>
                   <option>Spices &amp; Herbs</option>
                   <option>Marine Products</option>
@@ -436,10 +499,10 @@ body {
               </div>
             </div>
             <div>
-              <label class="block text-sm font-bold text-gray-700 mb-2">Message *</label>
-              <textarea rows="4" name="message" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition" placeholder="Tell us about your requirements — quantity, destination, packaging preferences, etc."></textarea>
+              <label class="block text-sm font-bold text-gray-700 mb-1.5 md:mb-2">Message *</label>
+              <textarea rows="4" name="message" required class="w-full px-3 md:px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-base" placeholder="Tell us about your requirements — quantity, destination, packaging preferences, etc."></textarea>
             </div>
-            <button type="submit" class="w-full bg-crimson-red text-white py-4 rounded-lg font-bold text-lg hover:bg-red-700 transition shadow-lg">
+            <button type="submit" class="w-full bg-crimson-red text-white py-3.5 md:py-4 rounded-lg font-bold text-base md:text-lg hover:bg-red-700 active:bg-red-800 transition shadow-lg">
               <i class="fas fa-paper-plane mr-2"></i>Send Inquiry
             </button>
             <p class="text-xs text-gray-400 text-center">We typically respond within 24 business hours.</p>
@@ -451,70 +514,101 @@ body {
 </section>
 
 <!-- Footer -->
-<footer class="bg-royal-blue text-white py-12 border-t-8 border-gold">
-  <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-12">
+<footer class="bg-royal-blue text-white py-10 md:py-12 border-t-8 border-gold">
+  <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-12">
     <div>
       <div class="flex items-center space-x-3 mb-4">
         <div class="logo-monogram" style="background: transparent; border-color: var(--gold);">EG</div>
-        <h3 class="text-2xl font-bold text-gold">ELIJAH GLOBAL IMPEX</h3>
+        <h3 class="text-xl md:text-2xl font-bold text-gold">ELIJAH GLOBAL IMPEX</h3>
       </div>
-      <p class="text-gray-300">A Private Limited company specializing in the export of agricultural commodities, spices, and marine products from Andhra Pradesh, India.</p>
-      <div class="flex space-x-4 mt-6">
-        <a href="https://wa.me/919121799978" target="_blank" rel="noopener" class="text-2xl hover:text-gold transition" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-        <a href="mailto:contact@elijahglobalimpex.com" class="text-2xl hover:text-gold transition" aria-label="Email"><i class="fas fa-envelope"></i></a>
+      <p class="text-gray-300 text-sm sm:text-base">A Private Limited company specializing in the export of agricultural commodities, spices, and marine products from Andhra Pradesh, India.</p>
+      <div class="flex space-x-5 mt-6">
+        <a href="https://wa.me/919121799978" target="_blank" rel="noopener" class="text-2xl hover:text-gold active:text-gold transition p-1" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+        <a href="mailto:Elijah@elijahglobalimpex.com" class="text-2xl hover:text-gold active:text-gold transition p-1" aria-label="Email"><i class="fas fa-envelope"></i></a>
+        <a href="tel:+919121799978" class="text-2xl hover:text-gold active:text-gold transition p-1" aria-label="Call us"><i class="fas fa-phone-alt"></i></a>
       </div>
     </div>
     <div>
       <h4 class="text-lg font-bold mb-4 uppercase tracking-wider">Quick Links</h4>
-      <ul class="space-y-2 text-gray-300">
-        <li><a href="#home" class="hover:text-gold transition">Home</a></li>
-        <li><a href="#about" class="hover:text-gold transition">About Us</a></li>
-        <li><a href="#products" class="hover:text-gold transition">Product Catalog</a></li>
-        <li><a href="#contact" class="hover:text-gold transition">Contact Us</a></li>
+      <ul class="space-y-3 text-gray-300">
+        <li><a href="#home" class="hover:text-gold active:text-gold transition">Home</a></li>
+        <li><a href="#about" class="hover:text-gold active:text-gold transition">About Us</a></li>
+        <li><a href="#products" class="hover:text-gold active:text-gold transition">Product Catalog</a></li>
+        <li><a href="#contact" class="hover:text-gold active:text-gold transition">Contact Us</a></li>
       </ul>
     </div>
     <div>
       <h4 class="text-lg font-bold mb-4 uppercase tracking-wider">Business Hours</h4>
-      <p class="text-gray-300 mb-2">Monday &ndash; Saturday: 09:00 AM &ndash; 07:00 PM IST</p>
-      <p class="text-gray-300">Sunday: Closed (Available via WhatsApp)</p>
+      <p class="text-gray-300 mb-2 text-sm sm:text-base">Monday &ndash; Saturday: 09:00 AM &ndash; 07:00 PM IST</p>
+      <p class="text-gray-300 text-sm sm:text-base">Sunday: Closed (Available via WhatsApp)</p>
       <div class="mt-6 text-xs text-gray-400 space-y-1">
         <p>Director: Elijah Vivek Sanamanda</p>
         <p>CIN / Registration: Private Limited Company</p>
       </div>
     </div>
   </div>
-  <div class="max-w-7xl mx-auto px-4 border-t border-blue-800 mt-12 pt-8 text-center text-sm text-gray-400">
+  <div class="max-w-7xl mx-auto px-4 border-t border-blue-800 mt-10 md:mt-12 pt-6 md:pt-8 text-center text-xs sm:text-sm text-gray-400">
     <p>&copy; 2026 Elijah Global Impex Private Limited. All Rights Reserved.</p>
   </div>
 </footer>
 
 <!-- WhatsApp Sticky Button -->
-<a href="https://wa.me/919121799978" target="_blank" rel="noopener" class="fixed bottom-6 right-6 bg-green-500 text-white p-4 rounded-full shadow-2xl z-50 hover:scale-110 transition flex items-center justify-center" aria-label="Chat on WhatsApp">
-  <i class="fab fa-whatsapp text-3xl"></i>
+<a href="https://wa.me/919121799978" target="_blank" rel="noopener" class="fixed bottom-4 right-4 md:bottom-6 md:right-6 bg-green-500 text-white w-14 h-14 md:w-16 md:h-16 rounded-full shadow-2xl z-50 hover:scale-110 active:scale-95 transition flex items-center justify-center" aria-label="Chat on WhatsApp">
+  <i class="fab fa-whatsapp text-2xl md:text-3xl"></i>
 </a>
 
 <!-- AOS Library -->
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
-  // Initialize AOS scroll animations
+  // Initialize AOS - reduce animations on mobile for performance
   AOS.init({
-    duration: 700,
+    duration: window.innerWidth < 768 ? 400 : 700,
     easing: 'ease-out-cubic',
     once: true,
-    offset: 80
+    offset: window.innerWidth < 768 ? 30 : 80,
+    disable: false
   });
 
-  // Mobile menu toggle
+  // Mobile menu toggle with animation
   function toggleMenu() {
     const menu = document.getElementById('mobile-menu');
-    menu.classList.toggle('hidden');
+    const icon = document.getElementById('menu-icon');
+    const toggle = document.getElementById('menu-toggle');
+    const isOpen = menu.classList.contains('open');
+
+    if (isOpen) {
+      menu.classList.remove('open');
+      icon.classList.remove('fa-times');
+      icon.classList.add('fa-bars');
+      toggle.setAttribute('aria-expanded', 'false');
+    } else {
+      menu.classList.add('open');
+      icon.classList.remove('fa-bars');
+      icon.classList.add('fa-times');
+      toggle.setAttribute('aria-expanded', 'true');
+    }
   }
 
   // Close mobile menu on link click
   document.querySelectorAll('#mobile-menu a').forEach(link => {
     link.addEventListener('click', () => {
-      document.getElementById('mobile-menu').classList.add('hidden');
+      const menu = document.getElementById('mobile-menu');
+      const icon = document.getElementById('menu-icon');
+      const toggle = document.getElementById('menu-toggle');
+      menu.classList.remove('open');
+      icon.classList.remove('fa-times');
+      icon.classList.add('fa-bars');
+      toggle.setAttribute('aria-expanded', 'false');
     });
+  });
+
+  // Close mobile menu when tapping outside
+  document.addEventListener('click', (e) => {
+    const menu = document.getElementById('mobile-menu');
+    const nav = document.querySelector('nav');
+    if (menu.classList.contains('open') && !nav.contains(e.target)) {
+      toggleMenu();
+    }
   });
 
   // Active nav highlight on scroll
